@@ -1,0 +1,8 @@
+
+
+# Main executable generated
+simplesitegenerator
+
+# C generated files
+*.o
+*.d
