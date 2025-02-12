@@ -6,3 +6,6 @@ simplesitegenerator
 # C generated files
 *.o
 *.d
+
+# out folder - hopefully where build outputs are
+out/
