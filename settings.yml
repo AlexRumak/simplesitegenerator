@@ -1,0 +1,5 @@
+blog:
+  location: blogs/
+
+resume:
+  location: resume/resume.md
