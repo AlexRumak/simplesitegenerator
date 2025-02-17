@@ -10,9 +10,9 @@ LIBS= -lpthread
 
 PRODUCT=$(BUILD_DIR)/simplesitegenerator
 
-HFILES= parser.h
+HFILES= parser.h ctest.h
 CFILES= src/simplesitegenerator.c src/parser/parser.c
-TESTFILES= src/tests/test_parser.c
+TESTFILES= src/tests/test_parser.c src/tests/ctest.c
 
 TEST_RESOURCES_SRC = src/tests/resources
 
