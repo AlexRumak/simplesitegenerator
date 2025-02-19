@@ -1,0 +1,12 @@
+KEY blog
+NEWLINE 
+SPACE 2
+KEY location
+VALUE blogs/
+NEWLINE 
+KEY resume
+NEWLINE 
+SPACE 2
+KEY location
+VALUE resume/resume.md
+NEWLINE 

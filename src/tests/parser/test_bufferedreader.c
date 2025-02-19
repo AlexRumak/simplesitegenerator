@@ -29,6 +29,4 @@ void test_bufferedReader_readLine()
   line = bfGetLine(br, 5, 100, &length);
   assertTrue(strcmp(line, "  location: blogs/"), "First second should be '  location: blogs/'");
   free(line);
-
-  
 }

@@ -6,8 +6,7 @@ const char* getTokenType(enum TokenType type)
 {
   switch (type) 
   {
-     case STARTARRAY: return "STARTARRAY";
-     case ENDARRAY: return "ENDARRAY";
+     case ARRAYEL: return "ARRAYEL";
      case STARTDICTIONARY: return "STARTDICTIONARY";
      case ENDDICTIONARY: return "ENDDICTIONARY";
      case KEY: return "KEY";

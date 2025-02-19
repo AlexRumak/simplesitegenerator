@@ -1,0 +1,8 @@
+blog:
+  location: 
+    - hello: there
+    - two
+    - three
+
+resume:
+  location: resume/resume.md

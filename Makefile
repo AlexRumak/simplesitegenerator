@@ -1,6 +1,6 @@
 BUILD_DIR = ./out
 
-INCLUDE_DIRS = -I./src -I./src/parser -I./src/tests
+INCLUDE_DIRS = -I./src -I./src/parser -I./src/tests -I./src/tests/parser -I./src/tests/lib
 LIB_DIRS =
 CC=gcc
 
