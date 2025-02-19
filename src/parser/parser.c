@@ -1,27 +1,34 @@
 #include "parser.h"
 #include "token.h"
+#include "bufferedreader.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 
+// Constants
 #define INITIAL_BUFFER_SIZE 1024
 #define MAX_TOKEN_VALUE_LENGTH 1024
+#define MIN_TOKEN_BUFFER_LENGTH 8
 #define ROTATING_BUFFER_SIZE 1024
 #define MAX_FILE_SIZE 10000
+#define MAX_LINE_LENGTH 1024
+#define LINE_BUFFER_START_SIZE 16
+#define NULL_TERMINATOR '\0'
+#define NEW_LINE '\n'
 
-static int isValidKeyChar(int c)
-{
-  return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == ' ';
-}
+// ERROR Definitions
+#define NOT_SPACE -1
+#define INVALID_CHARACTER -2
+#define COULD_NOT_GET_MEMORY -3
 
 static int isSpace(int c)
 {
   return c == ' ';
 }
 
-static int isSeparator(int c)
+static int isSeparator(int c, int n)
 {
-  return c == ':';
+  return c == ':' && n == ' ';
 }
 
 static int isNewLine(int c)
@@ -29,15 +36,176 @@ static int isNewLine(int c)
   return c == '\n';
 }
 
-static int numSpaces(struct BufferedReader *bf, int i)
+static int isBannedCharacter(int c)
+{
+  return c == '\t';
+}
+
+static int isValidKeyChar(int c)
+{
+  return !isBannedCharacter(c);
+}
+
+static int numSpaces(char *line, int i)
 {
   int c;
   int count = 0;
-  while (isSpace(c = getC(bf, i++)))
+  while (isSpace(c = line[i++]))
   {
     count++;
   }
   return count;
+}
+
+static char* getErrorStr(int errorCode)
+{
+  switch(errorCode)
+  {
+    case NOT_SPACE: return "The character at the given index is not a space.";
+    case INVALID_CHARACTER: return "The character at the given index is not a valid key character.";
+    default: return "Unknown Error";
+  }
+}
+
+static char* parseKey(char *line, int *i)
+{
+  int currChar, nextChar;
+
+  int s = MIN_TOKEN_BUFFER_LENGTH, j = 0;
+  char *str = malloc(s * sizeof(char));
+  while ((currChar = line[*i]) != NULL_TERMINATOR)
+  {
+    if (isBannedCharacter(currChar))
+    {
+      *i = INVALID_CHARACTER;
+      return NULL;
+    }
+
+    nextChar = line[*i + 1];
+
+    if (isSeparator(currChar, nextChar))
+    {
+      *i += 1; // Skip separator
+      break;
+    }
+
+    str[j] = currChar;
+    j++;
+
+    if (j == s)
+    {
+      s *= 2;
+      char *newstr = realloc(str, s * sizeof(char));
+      if (newstr == NULL)
+      {
+        free(str);
+        *i = COULD_NOT_GET_MEMORY;
+        return NULL;
+      }
+    }
+    (*i)++;
+  }
+
+  str[j] = NULL_TERMINATOR;
+  return str;
+}
+
+static char* parseValue(char *line, int *i)
+{
+  int currChar;
+
+  int s = MIN_TOKEN_BUFFER_LENGTH, j = 0;
+  char *str = malloc(s * sizeof(char));
+  while ((currChar = line[*i]) != NULL_TERMINATOR)
+  {
+    if (isBannedCharacter(currChar))
+    {
+      *i = INVALID_CHARACTER;
+      return NULL;
+    }
+
+    str[j] = currChar;
+    j++;
+
+    if (j == s)
+    {
+      s *= 2;
+      char *newstr = realloc(str, s * sizeof(char));
+      if (newstr == NULL)
+      {
+        free(str);
+        *i = COULD_NOT_GET_MEMORY;
+        return NULL;
+      }
+    }
+    (*i)++;
+  }
+
+  str[j] = NULL_TERMINATOR;
+  j--;
+
+  // strip whitespace from end
+  while (isSpace(str[j])) {
+    str[j] = NULL_TERMINATOR;
+  }
+
+  return str;
+}
+
+static void parseLine(struct TokenStack *stack, char* line)
+{
+  // CALCULATE NUMBER OF SPACES AT START
+  int i = numSpaces(line, 0);
+
+  // EDGE-CASES
+  // EDGE-CASE: Empty Line
+  if (line[i] == '\0') {
+    return;
+  }
+  // EDGE-CASE: Comment
+  if (line[i] == '#') {
+    return;
+  }
+
+  char *str = malloc(5 * sizeof(char));
+  sprintf(str, "%d", i);
+
+  if (i > 0)
+  {
+    pushToken(stack, createToken(SPACE, str));
+  }
+
+  // PARSE KEY
+  char *key = parseKey(line, &i);
+  int len = strlen(key);
+  if (key[len - 1] == ':')
+  {
+    key[len - 1] = NULL_TERMINATOR;
+    pushToken(stack, createToken(KEY, key));
+    pushToken(stack, createToken(NEWLINE, NULL));
+    return;
+  }
+
+  if (key == NULL)
+  {
+    printf("ERROR - Invalid Key - %s - in line %s\n", getErrorStr(i), line);
+    return;
+  }
+  pushToken(stack, createToken(KEY, key));
+
+  // SKIP SPACES
+  i += numSpaces(line, i);
+
+  // PARSEVALUE
+  char *value = parseValue(line, &i);
+  if (value == NULL)
+  {
+    printf("ERROR - Invalid Key - %s - in line %s\n", getErrorStr(i), line);
+    return;
+  }
+  pushToken(stack, createToken(VALUE, value));
+  pushToken(stack, createToken(NEWLINE, NULL));
+  // DONE
 }
 
 TreeNode *parseTreeNode(FILE *fp) 
@@ -48,23 +216,29 @@ TreeNode *parseTreeNode(FILE *fp)
   }
 
   // The circular buffer to forward and backwards search
-  struct BufferedReader *bf = createBufferedFile(fp, MAX_FILE_SIZE);
-
-  // Tracks the current 'Token' Value
-  int tokenValueBuffer[MAX_TOKEN_VALUE_LENGTH] = {0};
-  int tokenValueInd = 0;
-
-  // Where we are at in the buffer
-  int i = 0;
-
-  int lastNumberOfSpaces = numSpaces(bf, i);
+  struct BufferedFile *bf = createBufferedFile(fp, MAX_FILE_SIZE);
 
   ////////////// lexical parsing of file - first pass //////////////
   struct TokenStack *stack = createTokenStack(INITIAL_BUFFER_SIZE);
 
-  pushToken(stack, createToken(STARTDICTIONARY, NULL)); // Root Dictionary
-   
-  pushToken(stack, createToken(ENDDICTIONARY, NULL));
+  int linesParsedSize = LINE_BUFFER_START_SIZE, currLine = 0;
+  char** linesParsed = malloc(sizeof(char*) * linesParsedSize);
+
+  // Unoptimized token parser
+  int c, i = 0;
+  while ((c = getC(bf, i)) != EOF)
+  {
+    int lineLength;
+    char *line = bfGetLine(bf, i, MAX_LINE_LENGTH, &lineLength);
+
+    linesParsed[currLine % linesParsedSize] = line;
+
+    i+=lineLength;
+
+    parseLine(stack, linesParsed[currLine % linesParsedSize]);
+
+    currLine++;
+  }
 
   printTokenStack(stack);
 

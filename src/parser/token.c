@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include "token.h"
 
-
 const char* getTokenType(enum TokenType type)
 {
   switch (type) 
@@ -13,6 +12,8 @@ const char* getTokenType(enum TokenType type)
      case ENDDICTIONARY: return "ENDDICTIONARY";
      case KEY: return "KEY";
      case VALUE: return "VALUE";
+     case SPACE: return "SPACE";
+     case NEWLINE: return "NEWLINE";
      default: return "ERROR";
   }
 }
@@ -39,9 +40,8 @@ void pushToken(struct TokenStack *stack, struct Token *token)
   if (stack->count == stack->bufferSize)
   {
     stack->bufferSize *= 2;
-    stack = realloc(stack, stack->bufferSize * sizeof(struct Token*));
+    stack->tokens = realloc(stack->tokens, stack->bufferSize * sizeof(struct Token*));
   }
-
   stack->tokens[stack->count++] = token;
 }
 

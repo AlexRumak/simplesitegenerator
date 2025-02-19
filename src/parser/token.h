@@ -8,7 +8,9 @@ enum TokenType
   STARTDICTIONARY,
   ENDDICTIONARY,
   KEY,
-  VALUE
+  VALUE,
+  SPACE,
+  NEWLINE
 };
 
 const char* getTokenType(enum TokenType type);

@@ -15,3 +15,20 @@ void test_bufferedReader_readFile()
   assertTrue(getC(br, 0) == 'b', "Should be first char");
   assertTrue(getC(br, 3) == 'g', "Should be fourth char");
 }
+
+void test_bufferedReader_readLine()
+{
+  FILE *fp = loadResource("settings.yml");
+  struct BufferedFile *br = createBufferedFile(fp, 1024);
+
+  int length;
+  char *line = bfGetLine(br, 0, 100, &length);
+  assertTrue(strcmp(line, "blog:"), "First line should be blog:");
+  free(line);
+
+  line = bfGetLine(br, 5, 100, &length);
+  assertTrue(strcmp(line, "  location: blogs/"), "First second should be '  location: blogs/'");
+  free(line);
+
+  
+}

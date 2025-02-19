@@ -9,11 +9,6 @@ void test_parser_parseTreeNode()
 {
   FILE *fp = loadResource("settings.yml");
 
-  if (fp == NULL) {
-    printf("Error: Could not open file\n");
-    return;
-  }
-
   TreeNode *root = parseTreeNode(fp);
 
   assertTrue(root != NULL, "Root node is not null");
