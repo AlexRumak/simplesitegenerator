@@ -10,14 +10,11 @@ LIBS= -lpthread
 
 PRODUCT=$(BUILD_DIR)/simplesitegenerator
 
-HFILES= parser.h ctest.h
-CFILES= src/simplesitegenerator.c src/parser/parser.c
-TESTFILES= src/tests/test_parser.c src/tests/ctest.c
-
-TEST_RESOURCES_SRC = src/tests/resources
+SRC_DIR = src
+HFILES = $(shell find $(SRC_DIR) -type f -name "*.h")
+CFILES = $(shell find $(SRC_DIR) -type f -name "*.c")
 
 OBJS = $(patsubst src/%, $(BUILD_DIR)/%, $(CFILES:.c=.o))
-TEST_OBJS = $(patsubst src/%, $(BUILD_DIR)/%, $(TESTFILES:.c=.o))
 
 # Make sure that the build directory exists
 $(shell mkdir -p $(BUILD_DIR))
@@ -33,9 +30,11 @@ $(PRODUCT): $(OBJS)
 depend:
 
 # ======= TESTS =======
-test: $(TEST_OBJS) $(BUILD_DIR)/parser/parser.o
-	$(CC) $(CFLAGS) -o $(BUILD_DIR)/test_parser $(TEST_OBJS) $(BUILD_DIR)/parser/parser.o $(LIBS)
-	$(BUILD_DIR)/test_parser $(TEST_RESOURCES_SRC)
+TEST_RESOURCES_SRC = src/tests/resources
+
+test: $(OBJS)
+	$(CC) $(CFLAGS) -o $(BUILD_DIR)/simplesitegenerator $(TEST_OBJS) $(OBJS) $(LIBS)
+	$(BUILD_DIR)/simplesitegenerator -Mrun_test_suite
 
 $(BUILD_DIR)/%.o: src/%.c
 	mkdir -p $(dir $@)

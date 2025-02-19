@@ -6,15 +6,18 @@
 typedef struct TreeNode TreeNode;
 
 struct TreeNode {
-  char* key;
-  char* value; // For terminal nodes
+  char *key;
+  char *value; // For terminal nodes
   int nodeCount; // Node count == 0 for terminal nodes
-  TreeNode* nodes[];
+  int bufferSize;
+  TreeNode **nodes;
 };
 
-TreeNode* parseTreeNode(FILE *fp);
-TreeNode* getKey(TreeNode* level, char* key);
+TreeNode *parseTreeNode(FILE *fp);
+TreeNode *getNode(TreeNode* level, char* key);
+TreeNode *addNode(TreeNode* toAddTo, char* key, char* value);
+void printTree(TreeNode* root, int level);
 int isTerminalNode(TreeNode* node);
-int freeTree(TreeNode* root);
+void freeTree(TreeNode* root);
 
 #endif

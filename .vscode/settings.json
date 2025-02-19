@@ -1,0 +1,8 @@
+{
+  "files.associations": {
+    "parser.h": "c",
+    "__config": "c",
+    "stdio.h": "c",
+    "stdarg.h": "c"
+  }
+}
