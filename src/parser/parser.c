@@ -240,8 +240,6 @@ TreeNode *parseTreeNode(FILE *fp)
     currLine++;
   }
 
-  printTokenStack(stack);
-
   // Create root node
   TreeNode *root = addNode(NULL, "root", NULL);
 
