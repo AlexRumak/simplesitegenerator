@@ -7,6 +7,8 @@
 
 #define NULL_TERMINATOR '\0'
 #define NEW_LINE '\n'
+#define EMPTY_SPACE ' '
+#define ARRAY_CHAR '-'
 #define MIN_TOKEN_BUFFER_LENGTH 8
 
 
@@ -147,16 +149,26 @@ static char* parseValue(char *line, int *i)
   return str;
 }
 
-void parseLine(struct TokenStack *stack, char* line)
+static void stripComments(char line[])
+{
+  for(int i = 0; line[i] != NULL_TERMINATOR; i++)
+  {
+    if (line[i] == '#')
+    {
+      if (i != 0) {
+        if (line[i - 1] == EMPTY_SPACE && line[i+1] == EMPTY_SPACE) {
+          // Valid comment, terminate line
+          line[i] = '\0';
+        }
+      }
+    }
+  }
+}
+
+void parseLine(struct TokenStack *stack, char line[])
 {
   // Strip Commments - scan forward for comments
-  
-  int len = strlen(line);
-  
-  for (int i = 0, j = 1, k = 2; j < len; k++)
-  {
-    
-  }
+  stripComments(line);
 
   // CALCULATE NUMBER OF SPACES AT START
   int i = numSpaces(line, 0);
@@ -166,12 +178,16 @@ void parseLine(struct TokenStack *stack, char* line)
   if (line[i] == '\0') {
     return;
   }
-  // EDGE-CASE: Comment
-  if (line[i] == '#') {
-    return;
-  }
 
-  if (i > 0)
+  // Array
+  if (line[i] == ARRAY_CHAR && line[i] != NULL_TERMINATOR && line[i + 1] == EMPTY_SPACE)
+  {
+    i += 2;
+    char *str = malloc(5 * sizeof(char));
+    sprintf(str, "%d", i);
+    pushToken(stack, createToken(ARRAYEL, str));
+  }
+  else if (i > 0)
   {
     char *str = malloc(5 * sizeof(char));
     sprintf(str, "%d", i);

@@ -2,6 +2,13 @@
 #include "lexical.h"
 #include "token.h"
 #include <string.h>
+#include <stdlib.h>
+
+#define PRINT_RESULTS(actual, expected) \
+  printInfo("Actual: \n"); \
+  printTokenStack(actual); \
+  printInfo("Expected: \n"); \
+  printTokenStack(expected);
 
 int areTokenStacksEqual(struct TokenStack *stack, struct TokenStack *stack2)
 {
@@ -37,10 +44,7 @@ void test_lexical_parseYamlBasic()
   pushToken(expected, createToken(VALUE, "value"));
   pushToken(expected, createToken(NEWLINE, NULL));
 
-  printf("\nActual: \n");
-  printTokenStack(stack);
-  printf("\nExpected: \n");
-  printTokenStack(expected);
+  PRINT_RESULTS(stack, expected);
 
   assertTrue(areTokenStacksEqual(stack, expected), "Basic parse failed");
 }
@@ -57,10 +61,7 @@ void test_lexical_parseYamlArray()
   pushToken(expected, createToken(VALUE, "value"));
   pushToken(expected, createToken(NEWLINE, NULL));
 
-  printf("\nActual: \n");
-  printTokenStack(stack);
-  printf("\nExpected: \n");
-  printTokenStack(expected);
+  PRINT_RESULTS(stack, expected);
 
   assertTrue(areTokenStacksEqual(stack, expected), "Basic parse failed");
 }
@@ -73,9 +74,9 @@ void test_lexical_parseYamlArrayComplex()
 
 }
 
-void test_lexical_parseCommentAtEndOfArray()
+void test_lexical_parseCommentAtEndOfDict()
 {
-  char* line = "      key: value # Hi this is a comment";
+  char line[] = "      key: value # Hi this is a comment";
   struct TokenStack *stack = createTokenStack(8);
   parseLine(stack, line);
 
@@ -85,10 +86,7 @@ void test_lexical_parseCommentAtEndOfArray()
   pushToken(expected, createToken(VALUE, "value"));
   pushToken(expected, createToken(NEWLINE, NULL));
 
-  printf("\nActual: \n");
-  printTokenStack(stack);
-  printf("\nExpected: \n");
-  printTokenStack(expected);
+  PRINT_RESULTS(stack, expected);
 
   assertTrue(areTokenStacksEqual(stack, expected), "Comment parse failed");
 }

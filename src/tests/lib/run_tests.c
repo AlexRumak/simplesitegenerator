@@ -16,7 +16,8 @@ void run_tests(void)
   printf("TEST SUITE: TEST_LEXICAL_PARSER\n");
   runTest("test_lexical_parseYamlBasic", test_lexical_parseYamlBasic);  
   runTest("test_lexical_parseYamlArray", test_lexical_parseYamlArray);
-  runTest("test_lexical_parseYamlArrayComplex", test_lexical_parseYamlArrayComplex);  
+  runTest("test_lexical_parseYamlArrayComplex", test_lexical_parseYamlArrayComplex); 
+  runTest("test_lexical_parseCommentAtEndOfDict", test_lexical_parseCommentAtEndOfDict); 
 
   printf("TEST SUITE: TEST_PARSER\n");
   runTest("test_parser_parseTreeNode", test_parser_parseTreeNode);
