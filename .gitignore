@@ -1,5 +1,8 @@
 
 
+# .vscode folder
+.vscode/
+
 # Main executable generated
 simplesitegenerator
 
