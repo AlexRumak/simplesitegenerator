@@ -175,7 +175,7 @@ void parseLine(struct TokenStack *stack, char line[])
 
   // EDGE-CASES
   // EDGE-CASE: Empty Line
-  if (line[i] == '\0') {
+  if (line[i] == NULL_TERMINATOR) {
     return;
   }
 
