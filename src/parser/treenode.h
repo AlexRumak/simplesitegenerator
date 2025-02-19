@@ -1,5 +1,5 @@
-#ifndef PARSER_H
-#define PARSER_H
+#ifndef TREENODE_H
+#define TREENODE_H
 
 #include <stdio.h>
 

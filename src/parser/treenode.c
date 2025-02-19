@@ -1,4 +1,4 @@
-#include "parser.h"
+#include "treenode.h"
 #include "token.h"
 #include "bufferedreader.h"
 #include "lexical.h"
@@ -55,8 +55,10 @@ TreeNode *parseTreeNode(FILE *fp)
     free(linesParsed[i]);
   }
 
-  // Create root node
+  ////////////// parsing the lexical notation //////////////
   TreeNode *root = addNode(NULL, "root", NULL);
+
+  
 
   return root;
 }

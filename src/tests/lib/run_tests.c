@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "ctest.h"
 #include "run_tests.h"
-#include "test_parser.h"
+#include "test_treenode.h"
 #include "test_bufferedreader.h"
 #include "test_lexical.h"
 

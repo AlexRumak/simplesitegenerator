@@ -1,5 +1,5 @@
-#ifndef TEST_PARSER_H
-#define TEST_PARSER_H
+#ifndef TEST_TREENODE_H
+#define TEST_TREENODE_H
 
 void test_parser_parseTreeNode();
 void test_parser_getNode();

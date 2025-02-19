@@ -2,7 +2,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
-#include "parser.h"
+#include "treenode.h"
 #include "ctest.h"
 
 void test_parser_parseTreeNode()
