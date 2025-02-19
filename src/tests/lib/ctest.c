@@ -91,3 +91,16 @@ void printInfo(char* message)
 {
   printf("%s - INFO: %s\n", cTest_current_test_name, message);
 }
+
+int safe_strcmp(const char *str1, const char *str2) {
+  if (str1 == NULL && str2 == NULL) {
+    return 0; // Both are null, consider them equal
+  }
+  if (str1 == NULL) {
+    return -1; // str1 is null, str2 is not
+  }
+  if (str2 == NULL) {
+    return 1;  // str2 is null, str1 is not
+  }
+  return strcmp(str1, str2); // Both are not null, compare them normally
+}

@@ -149,6 +149,15 @@ static char* parseValue(char *line, int *i)
 
 void parseLine(struct TokenStack *stack, char* line)
 {
+  // Strip Commments - scan forward for comments
+  
+  int len = strlen(line);
+  
+  for (int i = 0, j = 1, k = 2; j < len; k++)
+  {
+    
+  }
+
   // CALCULATE NUMBER OF SPACES AT START
   int i = numSpaces(line, 0);
 

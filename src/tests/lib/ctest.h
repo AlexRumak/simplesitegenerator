@@ -12,6 +12,9 @@ char cTest_resourceFilesBasePath[RESOURCE_FILE_BUFFER_SIZE];
 
 extern int cTest_TestSuiteStarted;
 
+// Compare
+int safe_strcmp(const char *str1, const char *str2);
+
 // Assertions
 void assertTrue(int condition, char* message);
 void assertFalse(int condition, char* message);
