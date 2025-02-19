@@ -37,7 +37,6 @@ TreeNode *parseTreeNode(FILE *fp)
     int lineLength;
     char *line = bfGetLine(bf, i, MAX_LINE_LENGTH, &lineLength);
 
-
     if (currLine > linesParsedSize)
     {
       char *l = linesParsed[currLine % linesParsedSize];
@@ -45,15 +44,16 @@ TreeNode *parseTreeNode(FILE *fp)
     }
 
     linesParsed[currLine % linesParsedSize] = line;
-
     i+=lineLength;
 
     parseLine(stack, linesParsed[currLine % linesParsedSize]);
-
     currLine++;
   }
-
-  // Free 
+  // Free
+  for(int i = 0; i < currLine && i < linesParsedSize; i++)
+  {
+    free(linesParsed[i]);
+  }
 
   // Create root node
   TreeNode *root = addNode(NULL, "root", NULL);
