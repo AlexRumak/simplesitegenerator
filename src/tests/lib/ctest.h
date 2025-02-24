@@ -8,7 +8,7 @@
 extern char cTest_current_test_name[BUFFER_SIZE];
 
 #define RESOURCE_FILE_BUFFER_SIZE 1024
-char cTest_resourceFilesBasePath[RESOURCE_FILE_BUFFER_SIZE];
+extern char cTest_resourceFilesBasePath[RESOURCE_FILE_BUFFER_SIZE];
 
 extern int cTest_TestSuiteStarted;
 
