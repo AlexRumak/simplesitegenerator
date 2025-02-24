@@ -3,11 +3,6 @@
 
 #include <stdio.h>
 
-// Extern C_Test vars
-extern char* cTest_current_test_name;
-extern char* cTest_resourceFilesBasePath;
-extern int cTest_TestSuiteStarted;
-
 // Compare
 int safe_strcmp(const char *str1, const char *str2);
 
