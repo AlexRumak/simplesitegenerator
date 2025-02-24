@@ -3,13 +3,9 @@
 
 #include <stdio.h>
 
-// Global buffer
-#define BUFFER_SIZE 1024
-extern char cTest_current_test_name[BUFFER_SIZE];
-
-#define RESOURCE_FILE_BUFFER_SIZE 1024
-extern char cTest_resourceFilesBasePath[RESOURCE_FILE_BUFFER_SIZE];
-
+// Extern C_Test vars
+extern char* cTest_current_test_name;
+extern char* cTest_resourceFilesBasePath;
 extern int cTest_TestSuiteStarted;
 
 // Compare
