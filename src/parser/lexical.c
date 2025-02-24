@@ -10,6 +10,7 @@
 #define EMPTY_SPACE ' '
 #define ARRAY_CHAR '-'
 #define MIN_TOKEN_BUFFER_LENGTH 8
+#define INT_MAX_DIGITS 11
 
 
 // ERROR Definitions
@@ -215,13 +216,13 @@ void parseLine(struct TokenStack *stack, char line[])
   if (line[i] == ARRAY_CHAR && line[i] != NULL_TERMINATOR && line[i + 1] == EMPTY_SPACE)
   {
     i += 2;
-    char *str = malloc(5 * sizeof(char));
+    char *str = malloc(INT_MAX_DIGITS * sizeof(char));
     sprintf(str, "%d", i);
     pushToken(stack, createToken(ARRAYEL, str));
   }
   else if (i > 0)
   {
-    char *str = malloc(5 * sizeof(char));
+    char *str = malloc(INT_MAX_DIGITS * sizeof(char));
     sprintf(str, "%d", i);
     pushToken(stack, createToken(SPACE, str));
   }

@@ -23,10 +23,15 @@ void test_bufferedReader_readLine()
 
   int length;
   char *line = bfGetLine(br, 0, 100, &length);
-  assertTrue(strcmp(line, "blog:"), "First line should be blog:");
+
+  printf("Expected: \"blog:\"\n  Actual: \"%s\"\n", line);
+
+  assertFalse(strcmp(line, "blog:"), "First line should be \"blog:\"");
   free(line);
 
-  line = bfGetLine(br, 5, 100, &length);
-  assertTrue(strcmp(line, "  location: blogs/"), "First second should be '  location: blogs/'");
+  printf("Expected: \"  locations: blogs/\"\n  Actual: \"%s\"\n", line);
+
+  line = bfGetLine(br, 6, 100, &length);
+  assertFalse(strcmp(line, "  location: blogs/"), "Second should be '  location: blogs/'");
   free(line);
 }

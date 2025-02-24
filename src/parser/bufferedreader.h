@@ -12,6 +12,10 @@ struct BufferedFile
   int *contents;
 };
 
+/// @brief Create a BufferedFile struct from a filepointer
+/// @param fp The file pointer to read from
+/// @param maxFileSizeBytes The max file size in bytes
+/// @return A BufferedFile struct
 struct BufferedFile *createBufferedFile(FILE *fp, int maxFileSizeBytes);
 
 /// @brief A method to read a string from memory from a file
@@ -21,6 +25,10 @@ struct BufferedFile *createBufferedFile(FILE *fp, int maxFileSizeBytes);
 /// @return Return a string that must be freed by the caller
 char* bfGetLine(struct BufferedFile *bf, int startIndex, int maxStrLength, int *strLength);
 
+/// @brief Gets character at location i in the buffered file
+/// @param bf The buffered file to read from
+/// @param i The index to read from
+/// @return The character at the given index
 int getC(struct BufferedFile *bf, int i);
 
 #endif
