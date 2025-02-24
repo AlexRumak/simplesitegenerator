@@ -1,5 +1,4 @@
 #include "treenode.h"
-#include "token.h"
 #include "bufferedreader.h"
 #include "lexical.h"
 #include <stdlib.h>
@@ -13,6 +12,17 @@
 #define MAX_FILE_SIZE 10000
 #define MAX_LINE_LENGTH 1024
 #define LINE_BUFFER_START_SIZE 16
+
+void freeTokenStack(struct TokenStack *stack) 
+{
+  for (int i = 0; i < stack->count; i++)
+  {
+    free(stack->tokens[i]->value);
+    free(stack->tokens[i]);
+  }
+  free(stack->tokens);
+  free(stack);
+}
 
 TreeNode *parseTreeNode(FILE *fp) 
 {
@@ -49,6 +59,7 @@ TreeNode *parseTreeNode(FILE *fp)
     parseLine(stack, linesParsed[currLine % linesParsedSize]);
     currLine++;
   }
+
   // Free
   for(int i = 0; i < currLine && i < linesParsedSize; i++)
   {
@@ -56,9 +67,15 @@ TreeNode *parseTreeNode(FILE *fp)
   }
 
   ////////////// parsing the lexical notation //////////////
-  TreeNode *root = addNode(NULL, "root", NULL);
+  TreeNode *root;
+  int rc = parseTokenStack(stack, root);
+  if (rc) 
+  {
+    printf("Error: Could not parse token stack\n");
+    return NULL;
+  }
 
-  
+  freeTokenStack(stack);
 
   return root;
 }

@@ -1,6 +1,5 @@
 #include "ctest.h"
 #include "lexical.h"
-#include "token.h"
 #include <string.h>
 #include <stdlib.h>
 

@@ -1,6 +1,6 @@
-#include "treenode.h"
-#include "token.h"
+#include "lexical.h"
 #include "bufferedreader.h"
+#include "treenode.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -17,20 +17,9 @@
 #define INVALID_CHARACTER -2
 #define COULD_NOT_GET_MEMORY -3
 
-
-static int isSpace(int c)
-{
-  return c == ' ';
-}
-
 static int isSeparator(int c, int n)
 {
   return c == ':' && n == ' ';
-}
-
-static int isNewLine(int c)
-{
-  return c == '\n';
 }
 
 static int isBannedCharacter(int c)
@@ -38,16 +27,59 @@ static int isBannedCharacter(int c)
   return c == '\t';
 }
 
-static int isValidKeyChar(int c)
+const char* getTokenType(enum TokenType type)
 {
-  return !isBannedCharacter(c);
+  switch (type) 
+  {
+     case ARRAYEL: return "ARRAYEL";
+     case KEY: return "KEY";
+     case VALUE: return "VALUE";
+     case SPACE: return "SPACE";
+     case NEWLINE: return "NEWLINE";
+     default: return "ERROR";
+  }
+}
+
+struct TokenStack *createTokenStack(int bufferSize)
+{
+  struct TokenStack *stack = malloc(sizeof(struct TokenStack));
+  stack->count = 0;
+  stack->bufferSize = bufferSize;
+  stack->tokens = malloc(bufferSize * sizeof(struct Token*));
+  return stack;
+}
+
+void printTokenStack(struct TokenStack *stack)
+{
+  for(int i = 0; i < stack->count; i++)
+  {
+    printf("%s %s\n", getTokenType(stack->tokens[i]->type), stack->tokens[i]->value == NULL ? "" : stack->tokens[i]->value);
+  }
+}
+
+void pushToken(struct TokenStack *stack, struct Token *token)
+{
+  if (stack->count == stack->bufferSize)
+  {
+    stack->bufferSize *= 2;
+    stack->tokens = realloc(stack->tokens, stack->bufferSize * sizeof(struct Token*));
+  }
+  stack->tokens[stack->count++] = token;
+}
+
+struct Token *createToken(enum TokenType tokenType, char *value)
+{
+  struct Token *token = malloc(sizeof(struct Token));
+  token->type = tokenType;
+  token->value = value;
+  return token;
 }
 
 static int numSpaces(char *line, int i)
 {
   int c;
   int count = 0;
-  while (isSpace(c = line[i++]))
+  while ((c = line[i++]) == EMPTY_SPACE)
   {
     count++;
   }
@@ -142,7 +174,7 @@ static char* parseValue(char *line, int *i)
   j--;
 
   // strip whitespace from end
-  while (isSpace(str[j])) {
+  while (str[j] == EMPTY_SPACE) {
     str[j] = NULL_TERMINATOR;
   }
 
@@ -225,4 +257,39 @@ void parseLine(struct TokenStack *stack, char line[])
   pushToken(stack, createToken(VALUE, value));
   pushToken(stack, createToken(NEWLINE, NULL));
   // DONE
+}
+
+
+int parseTokenStack(struct TokenStack *stack, struct TreeNode *root) 
+{
+
+  int *level = malloc(stack->count * sizeof(int));
+  int line = 0;
+
+  root = addNode(NULL, "root", NULL);
+  for (int i = 0; i < stack->count; i++)
+  {
+    struct Token *token = stack->tokens[i];
+    switch (token->type)
+    {
+      case ARRAYEL:
+        
+        break;
+      case KEY:
+
+        break;
+      case VALUE:
+
+        break;
+      case SPACE:
+        level[line] = atoi(token->value);
+        break;
+      case NEWLINE:
+        line++;
+        break;
+    }
+  }
+
+  free(level);
+  return 0;
 }
