@@ -259,45 +259,37 @@ void parseLine(struct TokenStack *stack, char line[])
   // DONE
 }
 
-/// TODO: Implement
-// /// Parser states
-// enum ParserState
-// {
-//   KEY_STATE,
-//   VALUE_STATE,
-//   ARRAY_STATE
-// };
+int parseTokenStack(struct TokenStack *stack, struct TreeNode *root) 
+{
+  /// TODO: Implement
 
-// int parseTokenStack(struct TokenStack *stack, struct TreeNode *root) 
-// {
+  // int *level = malloc(stack->count * sizeof(int));
+  // int line = 0;
 
-//   int *level = malloc(stack->count * sizeof(int));
-//   int line = 0;
-
-//   root = addNode(NULL, "root", NULL);
-//   for (int i = 0; i < stack->count; i++)
-//   {
-//     struct Token *token = stack->tokens[i];
-//     switch (token->type)
-//     {
-//       case ARRAYEL:
+  // root = addNode(NULL, "root", NULL);
+  // for (int i = 0; i < stack->count; i++)
+  // {
+  //   struct Token *token = stack->tokens[i];
+  //   switch (token->type)
+  //   {
+  //     case ARRAYEL:
         
-//         break;
-//       case KEY:
+  //       break;
+  //     case KEY:
 
-//         break;
-//       case VALUE:
+  //       break;
+  //     case VALUE:
 
-//         break;
-//       case SPACE:
-//         level[line] = atoi(token->value);
-//         break;
-//       case NEWLINE:
-//         line++;
-//         break;
-//     }
-//   }
+  //       break;
+  //     case SPACE:
+  //       level[line] = atoi(token->value);
+  //       break;
+  //     case NEWLINE:
+  //       line++;
+  //       break;
+  //   }
+  // }
 
-//   free(level);
-//   return 0;
-// }
+  // free(level);
+  return 1;
+}
