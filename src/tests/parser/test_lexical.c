@@ -89,3 +89,8 @@ void test_lexical_parseCommentAtEndOfDict()
 
   assertTrue(areTokenStacksEqual(stack, expected), "Comment parse failed");
 }
+
+void test_lexical_parseSpacesYml()
+{
+  
+}
