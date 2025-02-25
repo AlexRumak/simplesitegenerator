@@ -1,9 +1,11 @@
-#include "lexical.h"
-#include "bufferedreader.h"
-#include "treenode.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include "lexical.h"
+
+#define INITIAL_BUFFER_SIZE 1024
+#define MAX_LINE_LENGTH 1024
+#define LINE_BUFFER_START_SIZE 16
 
 #define NULL_TERMINATOR '\0'
 #define NEW_LINE '\n'
@@ -259,37 +261,225 @@ void parseLine(struct TokenStack *stack, char line[])
   // DONE
 }
 
+struct TokenStack *parseFile(struct BufferedFile *bf)
+{
+  struct TokenStack *stack = createTokenStack(INITIAL_BUFFER_SIZE);
+
+  int linesParsedSize = LINE_BUFFER_START_SIZE, currLine = 0;
+  char** linesParsed = malloc(sizeof(char*) * linesParsedSize);
+
+  // Unoptimized token parser
+  int c, i = 0;
+  while ((c = getC(bf, i)) != EOF)
+  {
+    int lineLength;
+    char *line = bfGetLine(bf, i, MAX_LINE_LENGTH, &lineLength);
+
+    if (currLine > linesParsedSize)
+    {
+      char *l = linesParsed[currLine % linesParsedSize];
+      free(l);
+    }
+
+    linesParsed[currLine % linesParsedSize] = line;
+    i+=lineLength;
+
+    parseLine(stack, linesParsed[currLine % linesParsedSize]);
+    currLine++;
+  }
+
+  // Free
+  for(int i = 0; i < currLine && i < linesParsedSize; i++)
+  {
+    free(linesParsed[i]);
+  }
+
+  return stack;
+}
+
+enum ParserState 
+{
+  NEXT,
+  KEYSTATE,
+  SPACESTATE,
+  VALUESTATE,
+  UPSTATE
+};
+
+struct Stack
+{
+  size_t size;
+  int top;
+  struct TreeNode **arr;
+};
+
+static struct Stack *initStack(size_t size)
+{
+  struct Stack *stack = malloc(sizeof(struct Stack));
+  stack->top = -1;
+  stack->size = size;
+  stack->arr = malloc(size * sizeof(TreeNode*));
+  return stack; 
+}
+
+static TreeNode *peekStack(struct Stack *stack) 
+{
+  if (stack->top < 0)
+  {
+    // no elements
+    return NULL;
+  }
+
+  return stack->arr[stack->top];
+}
+
+static int push(struct Stack *stack, TreeNode *next) 
+{
+  if (stack->top + 1 == stack->size) 
+  {
+    stack->size *= 2;
+    TreeNode **newArr = realloc(stack->arr, stack->size * sizeof(TreeNode*));
+    if (newArr == NULL)
+    {
+      printf("Failed to increase stack size.\n");
+      return -1;   
+    }
+    stack->arr = newArr;
+  }
+
+  stack->arr[++stack->top] = next;
+
+  return 0;
+}
+
+static TreeNode *pop(struct Stack *stack) 
+{
+  if (stack->top < 0)
+  {
+    printf("Attempted to pop off empty stack\n");
+    return NULL;
+  }
+  return stack->arr[stack->top--];
+}
+
+static void freeStack(struct Stack *stack)
+{
+  free(stack->arr);
+  free(stack);
+}
+
 int parseTokenStack(struct TokenStack *stack, struct TreeNode *root) 
 {
-  /// TODO: Implement
+  // Parser State machine
+  enum ParserState state = NEXT;
 
-  // int *level = malloc(stack->count * sizeof(int));
-  // int line = 0;
+  int expectedLevels = 4;
+  struct Stack *levelStack = initStack(expectedLevels);
+  int lastDepth = 0;
 
-  // root = addNode(NULL, "root", NULL);
-  // for (int i = 0; i < stack->count; i++)
-  // {
-  //   struct Token *token = stack->tokens[i];
-  //   switch (token->type)
-  //   {
-  //     case ARRAYEL:
-        
-  //       break;
-  //     case KEY:
+  int i = 0;
+  root = addNode(NULL, "root", NULL);
+  push(levelStack, root);
 
-  //       break;
-  //     case VALUE:
 
-  //       break;
-  //     case SPACE:
-  //       level[line] = atoi(token->value);
-  //       break;
-  //     case NEWLINE:
-  //       line++;
-  //       break;
-  //   }
-  // }
+  struct Token *nextToken = NULL;
+  while(1)
+  {
+    switch(state) 
+    {
+      case NEXT:
+        if (i >= stack->count)
+        {
+          break;
+        }
+        nextToken = stack->tokens[i++];
 
-  // free(level);
-  return 1;
+        switch(nextToken->type)
+        {
+          case KEY:
+          {
+            TreeNode *level = peekStack(levelStack);
+            TreeNode *newNode = addNode(level, nextToken->value, NULL);
+            push(levelStack, newNode);
+            // Next state == NEXT
+            break;
+          }
+          case VALUE:
+          {
+            TreeNode *level = peekStack(levelStack);
+
+            if (level->value != NULL)
+            {
+              printf("Attempted to set value to key %s twice\n", level->key);
+              return 1;
+            }
+
+            level->value = nextToken->value;
+            state = UPSTATE;
+            break;
+          }
+          case ARRAYEL:
+            printf("Not yet supported\n");
+            return 1;
+            break;
+          case NEWLINE:
+            // Do nothing?
+            break;
+          case SPACE:
+            lastDepth = atoi(nextToken->value);
+            state = SPACESTATE;
+            break;
+          default:
+            printf("Unknown token returned - critical failure\n");
+            return 1;
+        }
+
+        break;
+      case SPACESTATE:
+
+        if (i >= stack->count)
+        {
+          break;
+        }
+        nextToken = stack->tokens[i++];
+
+        switch(nextToken->type)
+        {
+          case KEY:
+
+            break;
+          case VALUE:
+
+            break;
+          case ARRAYEL:
+            printf("Not yet supported\n");
+            return 1;
+            break;
+          case NEWLINE:
+            // Do nothing?
+            break;
+          case SPACE:
+            lastDepth = atoi(nextToken->value);
+            state = SPACESTATE;
+            break;
+          default:
+            printf("Unknown token returned - critical failure\n");
+            return 1;
+        }
+
+        break;
+      case KEYSTATE:  
+        break;
+      case UPSTATE:
+        break;
+      case VALUESTATE:
+        break;
+      default:
+        printf("Unknown state reach - critical failure\n");
+        return 1;
+    }
+  }
+
+  freeStack(levelStack);
+  return 0;
 }
