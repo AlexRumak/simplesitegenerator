@@ -383,6 +383,8 @@ int parseTokenStack(struct TokenStack *stack, struct TreeNode *root)
 
 
   struct Token *nextToken = NULL;
+  TreeNode *newNode = NULL;
+  TreeNode *level = NULL;
   while(1)
   {
     switch(state) 
@@ -397,16 +399,13 @@ int parseTokenStack(struct TokenStack *stack, struct TreeNode *root)
         switch(nextToken->type)
         {
           case KEY:
-          {
-            TreeNode *level = peekStack(levelStack);
-            TreeNode *newNode = addNode(level, nextToken->value, NULL);
+            level = peekStack(levelStack);
+            newNode = addNode(level, nextToken->value, NULL);
             push(levelStack, newNode);
             // Next state == NEXT
             break;
-          }
           case VALUE:
-          {
-            TreeNode *level = peekStack(levelStack);
+            level = peekStack(levelStack);
 
             if (level->value != NULL)
             {
@@ -417,7 +416,6 @@ int parseTokenStack(struct TokenStack *stack, struct TreeNode *root)
             level->value = nextToken->value;
             state = UPSTATE;
             break;
-          }
           case ARRAYEL:
             printf("Not yet supported\n");
             return 1;
