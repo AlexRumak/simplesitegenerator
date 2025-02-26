@@ -2,6 +2,7 @@
 #define LEXICAL_H
 
 #include "treenode.h"
+#include "bufferedreader.h"
 
 ////////// TYPES //////////
 
@@ -34,6 +35,9 @@ struct TokenStack
 /// @param stack The token stack to push to
 /// @param line Line must be mutable
 void parseLine(struct TokenStack *stack, char* line);
+
+
+struct TokenStack *parseFile(struct BufferedFile *bf);
 
 /// @brief 
 /// @param stack 

@@ -6,12 +6,9 @@
 #include <stdio.h>
 
 // Constants
-#define INITIAL_BUFFER_SIZE 1024
 #define MAX_TOKEN_VALUE_LENGTH 1024
 #define ROTATING_BUFFER_SIZE 1024
 #define MAX_FILE_SIZE 10000
-#define MAX_LINE_LENGTH 1024
-#define LINE_BUFFER_START_SIZE 16
 
 void freeTokenStack(struct TokenStack *stack) 
 {
@@ -35,36 +32,7 @@ TreeNode *parseTreeNode(FILE *fp)
   struct BufferedFile *bf = createBufferedFile(fp, MAX_FILE_SIZE);
 
   ////////////// lexical parsing of file - first pass //////////////
-  struct TokenStack *stack = createTokenStack(INITIAL_BUFFER_SIZE);
-
-  int linesParsedSize = LINE_BUFFER_START_SIZE, currLine = 0;
-  char** linesParsed = malloc(sizeof(char*) * linesParsedSize);
-
-  // Unoptimized token parser
-  int c, i = 0;
-  while ((c = getC(bf, i)) != EOF)
-  {
-    int lineLength;
-    char *line = bfGetLine(bf, i, MAX_LINE_LENGTH, &lineLength);
-
-    if (currLine > linesParsedSize)
-    {
-      char *l = linesParsed[currLine % linesParsedSize];
-      free(l);
-    }
-
-    linesParsed[currLine % linesParsedSize] = line;
-    i+=lineLength;
-
-    parseLine(stack, linesParsed[currLine % linesParsedSize]);
-    currLine++;
-  }
-
-  // Free
-  for(int i = 0; i < currLine && i < linesParsedSize; i++)
-  {
-    free(linesParsed[i]);
-  }
+  struct TokenStack *stack = parseFile(bf);
 
   ////////////// parsing the lexical notation //////////////
   TreeNode *root;

@@ -89,3 +89,9 @@ void test_lexical_parseCommentAtEndOfDict()
 
   assertTrue(areTokenStacksEqual(stack, expected), "Comment parse failed");
 }
+
+void test_lexical_parseSpacesYml()
+{
+  FILE *fp = loadResource("spaces.yml");
+  struct BufferedFile bf = createBufferedFile(fp, 2048);
+}
