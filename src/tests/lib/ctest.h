@@ -3,15 +3,6 @@
 
 #include <stdio.h>
 
-// Global buffer
-#define BUFFER_SIZE 1024
-char cTest_current_test_name[BUFFER_SIZE];
-
-#define RESOURCE_FILE_BUFFER_SIZE 1024
-char cTest_resourceFilesBasePath[RESOURCE_FILE_BUFFER_SIZE];
-
-extern int cTest_TestSuiteStarted;
-
 // Compare
 int safe_strcmp(const char *str1, const char *str2);
 

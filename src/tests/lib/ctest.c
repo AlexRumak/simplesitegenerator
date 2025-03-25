@@ -3,6 +3,8 @@
 #include <setjmp.h>
 #include "ctest.h"
 
+char* cTest_current_test_name;
+char* cTest_resourceFilesBasePath;
 int cTest_TestSuiteStarted = 0;
 
 jmp_buf endTest;
